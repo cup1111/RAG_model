@@ -29,6 +29,7 @@ app.add_middleware(
 # 请求模型
 class ChatRequest(BaseModel):
     message: str
+    isCodeMode: bool = False  # 添加代码模式标识
 
 # 响应模型
 class ChatResponse(BaseModel):
@@ -52,6 +53,34 @@ NLP让计算机能够理解、解释和生成人类语言。
 
 5. 计算机视觉
 计算机视觉使机器能够理解和处理视觉信息。
+"""
+
+# 在 KNOWLEDGE_BASE 后添加代码分析提示
+CODE_ANALYSIS_PROMPT = """
+请对提供的代码进行以下方面的分析：
+
+1. 代码复杂度分析：
+   - 时间复杂度
+   - 空间复杂度
+   - 代码结构复杂度
+
+2. 完成度评估：
+   - 功能完整性
+   - 错误处理
+   - 边界情况处理
+
+3. 代码质量分析：
+   - 代码可读性
+   - 命名规范
+   - 注释完整性
+   - 代码重用性
+
+4. 改进建议：
+   - 性能优化建议
+   - 代码结构优化建议
+   - 安全性建议
+
+请提供详细的分析报告。
 """
 
 # 文档存储
@@ -156,13 +185,19 @@ rag_chain = create_rag_chain()
 @app.post("/chat")
 async def chat(request: ChatRequest) -> ChatResponse:
     try:
-        # 运行 RAG 链
-        result = rag_chain({"question": request.message})
+        if request.isCodeMode:
+            # 在代码模式下，添加代码分析提示
+            analysis_request = f"{CODE_ANALYSIS_PROMPT}\n\n代码：\n{request.message}"
+            result = rag_chain({"question": analysis_request})
+        else:
+            # 普通对话模式
+            result = rag_chain({"question": request.message})
+        
         return ChatResponse(response=result["answer"])
     except Exception as e:
-        print(f"详细错误信息: {str(e)}")  # 添加详细错误日志
+        print(f"详细错误信息: {str(e)}")
         import traceback
-        print(f"错误堆栈: {traceback.format_exc()}")  # 打印完整错误堆栈
+        print(f"错误堆栈: {traceback.format_exc()}")
         raise HTTPException(
             status_code=500, 
             detail=f"处理请求时出错: {str(e)}"

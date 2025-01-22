@@ -11,6 +11,7 @@ export function Chat() {
     // 状态管理：消息历史和输入框
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState('');
+    const [isCodeMode, setIsCodeMode] = useState(false);  // 添加代码模式状态
 
     // 发送消息的异步函数
     const sendMessage = async () => {
@@ -34,7 +35,10 @@ export function Chat() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ message: input }),
+                body: JSON.stringify({ 
+                    message: input,
+                    isCodeMode: isCodeMode  // 添加模式标识
+                }),
             });
 
             // 处理响应
@@ -69,9 +73,24 @@ export function Chat() {
         void sendMessage();
     };
 
+    // 添加代码模式切换处理
+    const handleCodeModeChange = (e: ChangeEvent<HTMLInputElement>) => {
+        setIsCodeMode(e.target.checked);
+    };
+
     // 渲染组件
     return (
         <div className="chat-container">
+            <div className="mode-selector">
+                <label>
+                    <input
+                        type="checkbox"
+                        checked={isCodeMode}
+                        onChange={handleCodeModeChange}
+                    />
+                    代码分析模式
+                </label>
+            </div>
             {/* 消息显示区域 */}
             <div className="messages">
                 {messages.map((message, index) => (
@@ -90,7 +109,7 @@ export function Chat() {
                     value={input}
                     onChange={handleInputChange}
                     onKeyPress={handleKeyPress}
-                    placeholder="输入消息..."
+                    placeholder={isCodeMode ? "请输入要分析的代码..." : "输入消息..."}
                 />
                 <button onClick={handleSendClick}>发送</button>
             </div>
