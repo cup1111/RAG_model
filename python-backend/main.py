@@ -12,7 +12,9 @@ import os
 
 # 在这里添加API
 load_dotenv()
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+OPENAI_API_KEY = ''
+os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
+
 
 # 创建 FastAPI 应用
 app = FastAPI()

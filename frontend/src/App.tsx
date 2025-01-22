@@ -5,7 +5,7 @@ import { Chat } from './components/Chat'
 function App() {
   return (
     <div className="App">
-      <h1>GPT</h1>
+      <h1>AI 代码助手</h1>
       <Chat />
     </div>
   )
