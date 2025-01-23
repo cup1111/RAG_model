@@ -1,0 +1,156 @@
+# AI 代码助手
+
+一个基于 GPT 的智能代码分析和对话系统，集成了代码分析和智能对话功能。
+
+## 功能特点
+
+### 前端功能
+- 💻 代码分析模式
+  - 一键切换代码分析/普通对话模式
+  - 实时响应的用户界面
+  - 美观的消息气泡设计
+  - 响应式布局适配
+  
+### 后端功能
+- 🤖 基于 GPT 的智能对话
+- 📚 RAG (检索增强生成) 技术
+- 💾 向量数据库存储
+- 🔄 对话历史记录支持
+
+## 技术栈
+
+### 前端
+- React 18
+- TypeScript
+- Vite
+- 现代 CSS3
+
+### 后端
+- FastAPI
+- LangChain
+- OpenAI GPT
+- ChromaDB
+
+## 快速开始
+
+### 环境要求
+- Node.js >= 16
+- Python >= 3.8
+- OpenAI API 密钥
+
+### 安装步骤
+
+1. 克隆项目：
+cd [项目目录]
+
+2. 后端设置：
+cd python-backend
+python -m venv venv
+.\venv\Scripts\python.exe -m pip install -r requirements.txt
+echo "OPENAI_API_KEY=你的OpenAI密钥" > .env
+
+3. 前端设置：
+cd frontend
+npm install
+
+### 启动服务
+
+1. 启动后端：
+./start-backend.sh
+
+2. 启动前端：
+./start-frontend.sh
+
+## 使用指南
+
+### 代码分析模式
+1. 勾选界面上的"代码分析模式"
+2. 在输入框中粘贴要分析的代码
+3. 点击发送或按回车
+4. 系统将返回详细的代码分析，包括：
+   - 代码复杂度评估
+   - 完成度分析
+   - 代码质量检查
+   - 优化建议
+
+### 普通对话模式
+1. 取消勾选"代码分析模式"
+2. 正常输入问题或对话内容
+3. 系统将基于内置知识库进行回答
+
+## API 文档
+
+### POST /chat
+发送聊天消息或代码分析请求
+
+请求格式：
+{
+  "message": "string",
+  "isCodeMode": boolean
+}
+
+响应格式：
+{
+  "response": "string"
+}
+
+### GET /health
+健康检查接口
+
+响应：
+{
+  "status": "OK"
+}
+
+## 项目结构
+
+frontend/                # 前端项目
+├── src/
+│   ├── components/     # React 组件
+│   ├── App.tsx        
+│   ├── main.tsx       
+│   └── index.css      
+├── package.json       
+└── vite.config.ts     
+
+python-backend/         # 后端项目
+├── main.py            # 主服务器文件
+├── requirements.txt   # Python 依赖
+└── .env              # 环境变量配置
+
+## 开发说明
+
+### 前端开发
+- 使用 TypeScript 确保类型安全
+- 组件化开发，便于维护
+- 响应式设计，支持多设备
+- 现代化 UI/UX 设计
+
+### 后端开发
+- FastAPI 提供高性能 API
+- LangChain 集成 AI 能力
+- ChromaDB 提供向量存储
+- 支持会话上下文管理
+
+## 注意事项
+1. 确保 OpenAI API 密钥配置正确
+2. 不要将 .env 文件提交到版本控制
+3. 开发时注意 CORS 配置
+4. 定期清理向量数据库缓存
+
+## 常见问题
+
+1. Q: 启动失败怎么办？
+   A: 检查端口占用和环境变量配置
+
+2. Q: 代码分析不准确？
+   A: 确保提供足够的代码上下文
+
+3. Q: 响应很慢？
+   A: 检查网络连接和 API 限制
+
+## 维护者
+[项目维护者信息]
+
+## 许可证
+MIT License 
