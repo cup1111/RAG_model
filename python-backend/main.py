@@ -10,16 +10,15 @@ from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.memory import ConversationBufferMemory
 import os
 
-# 在这里添加API
+# Add API here
 load_dotenv()
 OPENAI_API_KEY = ''
 os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
 
-
-# 创建 FastAPI 应用
+# Create FastAPI application
 app = FastAPI()
 
-# 配置 CORS
+# Configure CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -28,64 +27,64 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# 请求模型
+# Request model
 class ChatRequest(BaseModel):
     message: str
-    isCodeMode: bool = False  # 添加代码模式标识
+    isCodeMode: bool = False  # Flag for code analysis mode
 
-# 响应模型
+# Response model
 class ChatResponse(BaseModel):
     response: str
 
-# 预设的知识库内容
+# Predefined knowledge base content
 KNOWLEDGE_BASE = """
-以下是关于人工智能的基础知识：
+Basic knowledge about artificial intelligence:
 
-1. 人工智能定义
-人工智能(AI)是计算机科学的一个分支，致力于创造能够模拟人类智能的机器。
+1. AI Definition
+Artificial Intelligence (AI) is a branch of computer science dedicated to creating machines capable of simulating human intelligence.
 
-2. 机器学习
-机器学习是AI的一个子领域，让计算机能够从数据中学习，而无需显式编程。
+2. Machine Learning
+Machine learning is a subset of AI that enables computers to learn from data without explicit programming.
 
-3. 深度学习
-深度学习是机器学习的一个分支，使用多层神经网络来学习数据的表示。
+3. Deep Learning
+Deep learning is a branch of machine learning that uses multi-layer neural networks to learn data representations.
 
-4. 自然语言处理
-NLP让计算机能够理解、解释和生成人类语言。
+4. Natural Language Processing
+NLP enables computers to understand, interpret, and generate human language.
 
-5. 计算机视觉
-计算机视觉使机器能够理解和处理视觉信息。
+5. Computer Vision
+Computer vision enables machines to understand and process visual information.
 """
 
 # 在 KNOWLEDGE_BASE 后添加代码分析提示
 CODE_ANALYSIS_PROMPT = """
-请对提供的代码进行以下方面的分析：
+Please analyze the following code in terms of:
 
-1. 代码复杂度分析：
-   - 时间复杂度
-   - 空间复杂度
-   - 代码结构复杂度
+1. Code complexity analysis:
+   - Time complexity
+   - Space complexity
+   - Code structure complexity
 
-2. 完成度评估：
-   - 功能完整性
-   - 错误处理
-   - 边界情况处理
+2. Completion assessment:
+   - Functionality completeness
+   - Error handling
+   - Boundary case handling
 
-3. 代码质量分析：
-   - 代码可读性
-   - 命名规范
-   - 注释完整性
-   - 代码重用性
+3. Code quality analysis:
+   - Code readability
+   - Naming conventions
+   - Comment completeness
+   - Code reusability
 
-4. 改进建议：
-   - 性能优化建议
-   - 代码结构优化建议
-   - 安全性建议
+4. Improvement suggestions:
+   - Performance optimization suggestions
+   - Code structure optimization suggestions
+   - Security suggestions
 
-请提供详细的分析报告。
+Please provide a detailed analysis report.
 """
 
-# 文档存储
+# Document storage class
 class DocumentStore:
     def __init__(self):
         try:
@@ -99,38 +98,38 @@ class DocumentStore:
                 output_key="answer"
             )
         except Exception as e:
-            print(f"初始化 DocumentStore 时出错: {str(e)}")
+            print(f"Error initializing DocumentStore: {str(e)}")
             raise
 
     def init_vector_store(self):
         if not self.vector_store:
             try:
-                # 先尝试加载已存在的向量存储
+                # Try to load existing vector store
                 self.vector_store = Chroma(
                     embedding_function=self.embeddings,
                     persist_directory="./chroma_db"
                 )
                 
-                # 如果是空的，才添加文本
+                # Add text only if store is empty
                 if len(self.vector_store.get()) == 0:
-                    print("向量存储为空，添加初始文本...")
-                    # 分割预设知识库文本
+                    print("Vector store is empty, adding initial text...")
+                    # Split predefined knowledge base text
                     text_splitter = RecursiveCharacterTextSplitter(
                         chunk_size=1000,
                         chunk_overlap=200
                     )
                     texts = text_splitter.split_text(KNOWLEDGE_BASE)
-                    
-                    # 添加文本到向量存储
+
+                    # Add text to vector store
                     self.vector_store.add_texts(texts)
-                    # 持久化存储
+                    # Persist storage
                     self.vector_store.persist()
-                    print("文本添加完成")
+                    print("Text addition completed")
                 else:
-                    print("使用已存在的向量存储")
+                    print("Using existing vector store")
                     
             except Exception as e:
-                print(f"初始化向量存储时出错: {str(e)}")
+                print(f"Error initializing vector store: {str(e)}")
                 raise
 
     def get_relevant_documents(self, query: str, k: int = 3):
@@ -138,31 +137,31 @@ class DocumentStore:
             return []
         return self.vector_store.similarity_search(query, k=k)
 
-# 创建文档存储实例
+# Create document store instance
 doc_store = DocumentStore()
 
-# 创建 RAG 链
+# Create RAG chain
 def create_rag_chain():
     try:
-        # 检查 API 密钥
+        # Check API key
         if not os.getenv("OPENAI_API_KEY"):
-            raise HTTPException(status_code=500, detail="OPENAI_API_KEY 未设置")
+            raise HTTPException(status_code=500, detail="OPENAI_API_KEY not set")
         
-        print("正在创建 LLM...")
-        # 创建 LLM
+        print("Creating LLM...")
+        # Create LLM
         llm = ChatOpenAI(
             temperature=0.7,
             model_name="gpt-3.5-turbo"
         )
-        print("LLM 创建成功")
+        print("LLM created successfully")
         
-        # 初始化向量存储
-        print("正在初始化向量存储...")
+        # Initialize vector store
+        print("Initializing vector store...")
         doc_store.init_vector_store()
-        print("向量存储初始化成功")
+        print("Vector store initialized")
 
-        # 创建检索链
-        print("正在创建检索链...")
+        # Create retrieval chain
+        print("Creating retrieval chain...")
         chain = ConversationalRetrievalChain.from_llm(
             llm=llm,
             retriever=doc_store.vector_store.as_retriever(),
@@ -172,37 +171,37 @@ def create_rag_chain():
             return_generated_question=False,
             output_key="answer"
         )
-        print("检索链创建成功")
+        print("Retrieval chain created")
         
         return chain
     except Exception as e:
-        print(f"创建 RAG 链时出错: {str(e)}")
+        print(f"Error creating RAG chain: {str(e)}")
         import traceback
-        print(f"错误堆栈: {traceback.format_exc()}")
+        print(f"Error stack: {traceback.format_exc()}")
         raise
 
-# 创建 RAG 链实例
+# Create RAG chain instance
 rag_chain = create_rag_chain()
 
 @app.post("/chat")
 async def chat(request: ChatRequest) -> ChatResponse:
     try:
         if request.isCodeMode:
-            # 在代码模式下，添加代码分析提示
-            analysis_request = f"{CODE_ANALYSIS_PROMPT}\n\n代码：\n{request.message}"
+            # In code mode, add code analysis prompt
+            analysis_request = f"{CODE_ANALYSIS_PROMPT}\n\nCode:\n{request.message}"
             result = rag_chain({"question": analysis_request})
         else:
-            # 普通对话模式
+            # Normal conversation mode
             result = rag_chain({"question": request.message})
         
         return ChatResponse(response=result["answer"])
     except Exception as e:
-        print(f"详细错误信息: {str(e)}")
+        print(f"Detailed error: {str(e)}")
         import traceback
-        print(f"错误堆栈: {traceback.format_exc()}")
+        print(f"Error stack: {traceback.format_exc()}")
         raise HTTPException(
             status_code=500, 
-            detail=f"处理请求时出错: {str(e)}"
+            detail=f"Error processing request: {str(e)}"
         )
 
 @app.get("/health")

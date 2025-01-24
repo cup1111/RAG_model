@@ -1,35 +1,35 @@
 import React, { useState, KeyboardEvent, ChangeEvent } from 'react';
 
-// 定义消息接口
+// Message interface definition
 interface Message {
-    content: string;  // 消息内容
-    isUser: boolean;  // 是否是用户消息
+    content: string;  // Message content
+    isUser: boolean;  // Whether it's a user message
 }
 
-// 聊天组件
+// Chat component
 export function Chat() {
-    // 状态管理：消息历史和输入框
+    // State management: message history and input
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState('');
-    const [isCodeMode, setIsCodeMode] = useState(false);  // 添加代码模式状态
+    const [isCodeMode, setIsCodeMode] = useState(false);  // Add code mode state
 
-    // 发送消息的异步函数
+    // Async function to send message
     const sendMessage = async () => {
-        // 检查输入是否为空
+        // Check if input is empty
         if (!input.trim()) return;
 
-        // 创建用户消息对象
+        // Create user message object
         const userMessage: Message = {
             content: input,
             isUser: true,
         };
 
-        // 更新消息列表，添加用户消息
+        // Update message list with user message
         setMessages(prev => [...prev, userMessage]);
-        setInput('');  // 清空输入框
+        setInput('');  // Clear input
 
         try {
-            // 发送请求到后端
+            // Send request to backend
             const response = await fetch('http://localhost:3000/chat', {
                 method: 'POST',
                 headers: {
@@ -37,48 +37,48 @@ export function Chat() {
                 },
                 body: JSON.stringify({ 
                     message: input,
-                    isCodeMode: isCodeMode  // 添加模式标识
+                    isCodeMode: isCodeMode  // Add mode identifier
                 }),
             });
 
-            // 处理响应
+            // Handle response
             const data = await response.json();
-            // 创建AI消息对象
+            // Create AI message object
             const aiMessage: Message = {
                 content: data.response,
                 isUser: false,
             };
 
-            // 更新消息列表，添加AI回复
+            // Update message list with AI response
             setMessages(prev => [...prev, aiMessage]);
         } catch (error) {
-            console.error('发送消息时出错:', error);
+            console.error('Error sending message:', error);
         }
     };
 
-    // 修改输入处理函数
+    // Input change handler
     const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
         setInput(e.target.value);
     };
 
-    // 修改按键处理函数
+    // Key press handler
     const handleKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') {
             void sendMessage();
         }
     };
 
-    // 由于 sendMessage 是异步函数，添加 void 操作符
+    // Since sendMessage is async, add void operator
     const handleSendClick = () => {
         void sendMessage();
     };
 
-    // 添加代码模式切换处理
+    // Add code mode toggle handler
     const handleCodeModeChange = (e: ChangeEvent<HTMLInputElement>) => {
         setIsCodeMode(e.target.checked);
     };
 
-    // 渲染组件
+    // Render component
     return (
         <div className="chat-container">
             <div className="mode-selector">
@@ -88,10 +88,10 @@ export function Chat() {
                         checked={isCodeMode}
                         onChange={handleCodeModeChange}
                     />
-                    代码分析模式
+                    Code Analysis Mode
                 </label>
             </div>
-            {/* 消息显示区域 */}
+            {/* Message display area */}
             <div className="messages">
                 {messages.map((message, index) => (
                     <div
@@ -102,16 +102,16 @@ export function Chat() {
                     </div>
                 ))}
             </div>
-            {/* 输入区域 */}
+            {/* Input area */}
             <div className="input-area">
                 <input
                     type="text"
                     value={input}
                     onChange={handleInputChange}
                     onKeyPress={handleKeyPress}
-                    placeholder={isCodeMode ? "请输入要分析的代码..." : "输入消息..."}
+                    placeholder={isCodeMode ? "Enter code to analyze..." : "Enter message..."}
                 />
-                <button onClick={handleSendClick}>发送</button>
+                <button onClick={handleSendClick}>Send</button>
             </div>
         </div>
     );
