@@ -1,156 +1,171 @@
-# AI 代码助手
+AI Code Assistant
+An AI-based intelligent code analysis and chat system, integrating code analysis and smart conversation features.
 
-一个基于 GPT 的智能代码分析和对话系统，集成了代码分析和智能对话功能。
+Features
+Frontend Features
+💻 Code Analysis Mode
 
-## 功能特点
+Toggle between code analysis and normal chat modes
 
-### 前端功能
-- 💻 代码分析模式
-  - 一键切换代码分析/普通对话模式
-  - 实时响应的用户界面
-  - 美观的消息气泡设计
-  - 响应式布局适配
-  
-### 后端功能
-- 🤖 基于 GPT 的智能对话
-- 📚 RAG (检索增强生成) 技术
-- 💾 向量数据库存储
-- 🔄 对话历史记录支持
+Real-time responsive UI
 
-## 技术栈
+Beautiful message bubble design
 
-### 前端
-- React 18
-- TypeScript
-- Vite
-- 现代 CSS3
+Responsive layout for various screen sizes
 
-### 后端
-- FastAPI
-- LangChain
-- OpenAI GPT
-- ChromaDB
+Backend Features
+🤖 GPT-based intelligent conversation
 
-## 快速开始
+📚 RAG (Retrieval-Augmented Generation) technology
 
-### 环境要求
-- Node.js >= 16
-- Python >= 3.8
-- OpenAI API 密钥
+💾 Vector database storage
 
-### 安装步骤
+🔄 Conversation history support
 
-1. 克隆项目：
-cd [项目目录]
+Technology Stack
+Frontend
+React 18
 
-2. 后端设置：
+TypeScript
+
+Vite
+
+Modern CSS3
+
+Backend
+FastAPI
+
+LangChain
+
+OpenAI GPT
+
+ChromaDB
+
+Quick Start
+Prerequisites
+Node.js >= 16
+
+Python >= 3.8
+
+OpenAI API key
+
+Installation Steps
+Clone the project:
+
+bash
+Copy
+Edit
+cd [project directory]
+Backend setup:
+
+bash
+Copy
+Edit
 cd python-backend
 python -m venv venv
 .\venv\Scripts\python.exe -m pip install -r requirements.txt
-echo "OPENAI_API_KEY=你的OpenAI密钥" > .env
+echo "OPENAI_API_KEY=your_openai_key" > .env
+Frontend setup:
 
-3. 前端设置：
+bash
+Copy
+Edit
 cd frontend
 npm install
+Start Services
+Start backend:
 
-### 启动服务
-
-1. 启动后端：
+bash
+Copy
+Edit
 ./start-backend.sh
+Start frontend:
 
-2. 启动前端：
+bash
+Copy
+Edit
 ./start-frontend.sh
+User Guide
+Code Analysis Mode
+Check the "Code Analysis Mode" checkbox
 
-## 使用指南
+Paste the code you want to analyze in the input box
 
-### 代码分析模式
-1. 勾选界面上的"代码分析模式"
-2. 在输入框中粘贴要分析的代码
-3. 点击发送或按回车
-4. 系统将返回详细的代码分析，包括：
-   - 代码复杂度评估
-   - 完成度分析
-   - 代码质量检查
-   - 优化建议
+Click send or press Enter
 
-### 普通对话模式
-1. 取消勾选"代码分析模式"
-2. 正常输入问题或对话内容
-3. 系统将基于内置知识库进行回答
+The system will return a detailed code analysis, including:
 
-## API 文档
+Code complexity evaluation
 
-### POST /chat
-发送聊天消息或代码分析请求
+Completion assessment
 
-请求格式：
+Code quality checks
+
+Optimization suggestions
+
+Normal Chat Mode
+Uncheck the "Code Analysis Mode" checkbox
+
+Input your question or chat message
+
+The system will respond based on the built-in knowledge base
+
+API Documentation
+POST /chat
+Send a chat message or code analysis request
+
+Request Format:
+
+json
+Copy
+Edit
 {
   "message": "string",
   "isCodeMode": boolean
 }
+Response Format:
 
-响应格式：
+json
+Copy
+Edit
 {
   "response": "string"
 }
+GET /health
+Health check endpoint
 
-### GET /health
-健康检查接口
+Response:
 
-响应：
+json
+Copy
+Edit
 {
   "status": "OK"
 }
+Project Structure
+frontend/ # Frontend project ├── src/ │ ├── components/ # React components │ ├── App.tsx
+│ ├── main.tsx
+│ └── index.css
+├── package.json
+└── vite.config.ts
 
-## 项目结构
+python-backend/ # Backend project ├── main.py # Main server file ├── requirements.txt # Python dependencies └── .env # Environment variable configuration
 
-frontend/                # 前端项目
-├── src/
-│   ├── components/     # React 组件
-│   ├── App.tsx        
-│   ├── main.tsx       
-│   └── index.css      
-├── package.json       
-└── vite.config.ts     
+Development Guidelines
+Frontend Development
+Use TypeScript for type safety
 
-python-backend/         # 后端项目
-├── main.py            # 主服务器文件
-├── requirements.txt   # Python 依赖
-└── .env              # 环境变量配置
+Component-based development for maintainability
 
-## 开发说明
+Responsive design for multi-device support
 
-### 前端开发
-- 使用 TypeScript 确保类型安全
-- 组件化开发，便于维护
-- 响应式设计，支持多设备
-- 现代化 UI/UX 设计
+Modern UI/UX design
 
-### 后端开发
-- FastAPI 提供高性能 API
-- LangChain 集成 AI 能力
-- ChromaDB 提供向量存储
-- 支持会话上下文管理
+Backend Development
+FastAPI for high-performance APIs
 
-## 注意事项
-1. 确保 OpenAI API 密钥配置正确
-2. 不要将 .env 文件提交到版本控制
-3. 开发时注意 CORS 配置
-4. 定期清理向量数据库缓存
+LangChain integration for AI capabilities
 
-## 常见问题
+ChromaDB for vector storage
 
-1. Q: 启动失败怎么办？
-   A: 检查端口占用和环境变量配置
-
-2. Q: 代码分析不准确？
-   A: 确保提供足够的代码上下文
-
-3. Q: 响应很慢？
-   A: 检查网络连接和 API 限制
-
-## 维护者
-[项目维护者信息]
-
-## 许可证
-MIT License 
+Supports conversation context management
