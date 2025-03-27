@@ -151,25 +151,8 @@ python-backend/         # Backend project
 - ChromaDB for vector storage.
 - Supports conversation context management.
 
-## Notes
-1. Ensure that the OpenAI API key is correctly configured.
-2. Do not commit the `.env` file to version control.
-3. Pay attention to CORS configurations during development.
-4. Regularly clean up the vector database cache.
-
-## Frequently Asked Questions
-
-1. **Q: What to do if the service fails to start?**
-   - A: Check for port conflicts and ensure the environment variables are set correctly.
-
-2. **Q: Why is the code analysis inaccurate?**
-   - A: Ensure you provide enough code context for better analysis.
-
-3. **Q: Why is the response slow?**
-   - A: Check your network connection and any API limitations.
 
 ## Maintainers
-[Project Maintainer Info]
+name: Zane Wang 
+email:5finoilheater@gmail.com
 
-## License
-MIT License
