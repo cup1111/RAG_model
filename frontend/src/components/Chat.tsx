@@ -30,8 +30,8 @@ export function Chat() {
         setInput('');  // Clear input
 
         try {
-            // Send request to backend
-            const response = await fetch('http://localhost:3000/chat', {
+            // Send request to backend - use relative path for monorepo deployment
+            const response = await fetch('/api/chat', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
