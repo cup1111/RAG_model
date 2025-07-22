@@ -31,19 +31,20 @@ app.add_middleware(
 )
 
 # ---------------------------------------------------------------------------
+# API Routes
+# ---------------------------------------------------------------------------
+# Add API routes first so they have higher priority than the catch-all StaticFiles
+app.include_router(router, prefix="/api")
+
+# ---------------------------------------------------------------------------
 # Static Files (Frontend)
 # ---------------------------------------------------------------------------
-# Try to serve frontend static files if they exist
+# Try to serve frontend static files if they exist (mounted after API routes)
 try:
     app.mount("/", StaticFiles(directory="../frontend/dist", html=True), name="static")
 except Exception:
     # If frontend is not built, just serve API
     pass
-
-# ---------------------------------------------------------------------------
-# API Routes
-# ---------------------------------------------------------------------------
-app.include_router(router, prefix="/api")
 
 # ---------------------------------------------------------------------------
 # Root endpoint (serve frontend)
