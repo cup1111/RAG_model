@@ -61,6 +61,5 @@ class DocumentStore:
             memory=self.memory,
             return_source_documents=True,
             verbose=True,
-            return_generated_question=False,
             output_key="answer",
         ) 
