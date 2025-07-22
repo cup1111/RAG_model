@@ -27,10 +27,29 @@ class DocumentStore:
         self.persist_directory = persist_directory
 
         # Create or load the Chroma vector store
-        self.vector_store = Chroma(
-            embedding_function=self.embeddings,
-            persist_directory=self.persist_directory,
-        )
+        try:
+            self.vector_store = Chroma(
+                embedding_function=self.embeddings,
+                persist_directory=self.persist_directory,
+            )
+        except ValueError as err:
+            # 旧版本 Chroma 持久化的 metadata 引用了 ONNXMiniLM_L6_V2，需要 onnxruntime。
+            # 若缺失该依赖，这里会抛 ValueError。我们自动删除旧数据目录并重建，
+            # 统一改用 OpenAIEmbeddings，避免额外依赖。
+            if "onnxruntime" in str(err):
+                import shutil
+                from pathlib import Path
+
+                db_path = Path(self.persist_directory)
+                if db_path.exists():
+                    shutil.rmtree(db_path)
+                # 重新创建空向量库
+                self.vector_store = Chroma(
+                    embedding_function=self.embeddings,
+                    persist_directory=self.persist_directory,
+                )
+            else:
+                raise
 
         # Populate with demo knowledge if empty
         if len(self.vector_store.get()) == 0:
