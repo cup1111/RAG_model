@@ -9,6 +9,28 @@ constants defined in `constants`.
 # Trigger .env loading and API-key validation on import
 import config  # noqa: F401  pylint: disable=unused-import
 
+# ---------------------------------------------------------------------------
+# Compatibility Patch: allow langchain_openai to pass `proxies` even though
+# openai>=1.24 removed this parameter. We monkey-patch openai.OpenAI.__init__
+# to accept and ignore a `proxies` kwarg.
+# ---------------------------------------------------------------------------
+import openai  # type: ignore
+
+
+_orig_openai_init = openai.OpenAI.__init__  # type: ignore[attr-defined]
+
+
+def _patched_init(self, *args, proxies=None, **kwargs):  # noqa: D401, ANN001
+    """Patched __init__ that silently drops obsolete `proxies` kwarg."""
+
+    # Discard the deprecated argument, then delegate to the original init
+    _orig_openai_init(self, *args, **kwargs)
+
+
+# Only patch once
+if "proxies" not in _orig_openai_init.__code__.co_varnames:
+    openai.OpenAI.__init__ = _patched_init  # type: ignore[method-assign]
+
 from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import Chroma
