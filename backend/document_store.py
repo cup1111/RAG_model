@@ -21,6 +21,18 @@ from langchain.chains import ConversationalRetrievalChain
 from langchain.memory import ConversationBufferMemory
 
 from constants import KNOWLEDGE_BASE
+from openai._base_client import SyncHttpxClientWrapper  # type: ignore
+
+# Patch httpx wrapper to ignore proxies kwarg generated internally
+_orig_sync_init = SyncHttpxClientWrapper.__init__
+
+
+def _patched_sync_init(self, *args, proxies=None, **kwargs):  # noqa: ANN001
+    _orig_sync_init(self, *args, **kwargs)
+
+
+if "proxies" not in _orig_sync_init.__code__.co_varnames:
+    SyncHttpxClientWrapper.__init__ = _patched_sync_init  # type: ignore
 
 
 class DocumentStore:
