@@ -2,9 +2,10 @@ fastapi==0.109.0
 uvicorn==0.27.0
 python-dotenv==1.0.0
 langchain==0.2.6
-langchain-openai==0.1.19
+langchain-openai==0.1.24
 langchain-community==0.2.6
-openai==1.55.3
+openai==1.57.0
 pydantic==1.10.13
 chromadb==0.4.22
 tiktoken==0.7.0
+onnxruntime==1.17.3
