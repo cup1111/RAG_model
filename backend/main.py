@@ -23,6 +23,19 @@ if 'onnxruntime' not in sys.modules:
     })
     sys.modules['onnxruntime'] = fake_ort
 
+# ---- 阻断 chromadb 默认嵌入器 -----------------------------------
+import types, sys
+
+dummy_ef_mod = types.ModuleType("chromadb.utils.embedding_functions")
+class _NoopEF:
+    def __init__(self, *_, **__): pass
+    def __call__(self, texts):      # 返回占位向量，维度随便
+        return [[0.0] * 3 for _ in texts]
+
+dummy_ef_mod.DefaultEmbeddingFunction = _NoopEF
+sys.modules["chromadb.utils.embedding_functions"] = dummy_ef_mod
+# ----------------------------------------------------------------
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
