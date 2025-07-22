@@ -1,0 +1,11 @@
+{
+    "name": "rag-app",
+    "scripts": {
+      "build": "cd frontend && npm install && npm run build",
+      "start": "cd backend && python main.py",
+      "dev": "concurrently \"cd backend && python main.py\" \"cd frontend && npm run dev\""
+    },
+    "devDependencies": {
+      "concurrently": "^8.0.0"
+    }
+  }
