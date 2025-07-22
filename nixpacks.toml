@@ -3,17 +3,19 @@ nixPkgs = ["nodejs", "python311"]
 
 [phases.install]
 cmds = [
-    "npm install",
-    "cd frontend && npm install",
-    "python3 -m ensurepip --upgrade",
-    "python3 -m pip install --upgrade pip",
-    "cd backend && python3 -m pip install -r requirements.txt"
+  "npm install",
+  "cd frontend && npm install",
+
+  "python3 -m venv /opt/venv",
+
+  "source /opt/venv/bin/activate && pip install --upgrade pip",
+  "source /opt/venv/bin/activate && pip install --no-cache-dir -r backend/requirements.txt"
 ]
 
 [phases.build]
 cmds = [
-    "npm run build"
+  "npm run build"
 ]
 
 [start]
-cmd = "npm run start" 
+cmd = "source /opt/venv/bin/activate && python backend/main.py" 
