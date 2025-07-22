@@ -9,46 +9,21 @@ constants defined in `constants`.
 # Trigger .env loading and API-key validation on import
 import config  # noqa: F401  pylint: disable=unused-import
 
-# Use modern OpenAI client explicitly and pass it to LangChain wrappers
-import openai  # type: ignore
-
-# langchain_openai 0.1.x supports `client` kwarg for OpenAI SDK ≥1.24
 from langchain_openai import OpenAIEmbeddings, ChatOpenAI
-
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import Chroma
 from langchain.chains import ConversationalRetrievalChain
 from langchain.memory import ConversationBufferMemory
 
 from constants import KNOWLEDGE_BASE
-from openai._base_client import SyncHttpxClientWrapper  # type: ignore
-
-# Patch httpx wrapper to ignore proxies kwarg generated internally
-_orig_sync_init = SyncHttpxClientWrapper.__init__
-
-
-def _patched_sync_init(self, *args, proxies=None, **kwargs):  # noqa: ANN001
-    _orig_sync_init(self, *args, **kwargs)
-
-
-if "proxies" not in _orig_sync_init.__code__.co_varnames:
-    SyncHttpxClientWrapper.__init__ = _patched_sync_init  # type: ignore
 
 
 class DocumentStore:
     """Encapsulate Chroma vector storage and conversation memory."""
 
     def __init__(self, persist_directory: str = "./chroma_db") -> None:
-        # Ensure proxy env vars don't break openai client on httpx
-        import os
-        for _var in ("HTTP_PROXY", "HTTPS_PROXY", "http_proxy", "https_proxy"):
-            os.environ.pop(_var, None)
-
-        # Create client
-        self._client = openai.OpenAI()
-
-        # Initialise embeddings with explicit client to avoid deprecated params
-        self.embeddings = OpenAIEmbeddings(client=self._client)
+        # Initialise embeddings (relies on OPENAI_API_KEY env)
+        self.embeddings = OpenAIEmbeddings()
         self.persist_directory = persist_directory
 
         # Create or load the Chroma vector store
@@ -76,7 +51,7 @@ class DocumentStore:
 
     def get_chain(self) -> ConversationalRetrievalChain:
         """Create a ConversationalRetrievalChain wired to this store."""
-        llm = ChatOpenAI(client=self._client, temperature=0.7, model_name="gpt-3.5-turbo")
+        llm = ChatOpenAI(temperature=0.7, model_name="gpt-3.5-turbo")
         retriever = self.vector_store.as_retriever()
         return ConversationalRetrievalChain.from_llm(
             llm=llm,
