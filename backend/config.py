@@ -17,4 +17,21 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 if not OPENAI_API_KEY:
     raise ValueError(
         "OPENAI_API_KEY environment variable not set. Please configure it in .env or export it directly!"
-    ) 
+    )
+
+# ---------------------------------------------------------------------------
+# Temporary compatibility patch
+# ---------------------------------------------------------------------------
+try:
+    from openai import OpenAI  # type: ignore
+
+    _orig_openai_init = OpenAI.__init__  # type: ignore[attr-defined]
+
+    def _patched_openai_init(self, *args, **kwargs):  # noqa: ANN001
+        kwargs.pop("proxies", None)
+        return _orig_openai_init(self, *args, **kwargs)
+
+    if _orig_openai_init is not _patched_openai_init:  # type: ignore[comparison-overlap]
+        OpenAI.__init__ = _patched_openai_init  # type: ignore[method-assign]
+except Exception:  # pragma: no cover
+    pass 
