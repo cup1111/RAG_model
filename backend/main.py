@@ -7,6 +7,22 @@ and includes the API routes defined in `routes.py`.
 """
 
 import os
+
+# ---------------------------------------------------------------------------
+# Stub out onnxruntime BEFORE any chromadb import to avoid optional dependency
+# issues. We never use the default ONNX embedding, so a dummy module is fine.
+# ---------------------------------------------------------------------------
+import sys, types  # noqa: E402
+
+if 'onnxruntime' not in sys.modules:
+    fake_ort = types.ModuleType('onnxruntime')
+    # provide minimal attrs to satisfy chromadb import
+    fake_ort.__dict__.update({
+        'get_available_providers': lambda: [],
+        '__version__': '0.0.0',
+    })
+    sys.modules['onnxruntime'] = fake_ort
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
