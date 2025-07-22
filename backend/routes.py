@@ -24,6 +24,9 @@ async def chat_endpoint(request: ChatRequest):
     if request.isCodeMode:
         system_prompt = CODE_ANALYSIS_PROMPT.strip()
         user_prompt = f"```python\n{request.message}\n```"
+        import os
+        for _v in ("HTTP_PROXY","HTTPS_PROXY","http_proxy","https_proxy"):
+            os.environ.pop(_v, None)
         import openai  # local import
         llm = ChatOpenAI(client=openai.OpenAI(), temperature=0, model_name="gpt-3.5-turbo")
         try:

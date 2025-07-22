@@ -27,7 +27,12 @@ class DocumentStore:
     """Encapsulate Chroma vector storage and conversation memory."""
 
     def __init__(self, persist_directory: str = "./chroma_db") -> None:
-        # Create a single OpenAI client instance (uses OPENAI_API_KEY env)
+        # Ensure proxy env vars don't break openai client on httpx
+        import os
+        for _var in ("HTTP_PROXY", "HTTPS_PROXY", "http_proxy", "https_proxy"):
+            os.environ.pop(_var, None)
+
+        # Create client
         self._client = openai.OpenAI()
 
         # Initialise embeddings with explicit client to avoid deprecated params
