@@ -43,6 +43,8 @@ class DocumentStore:
             self.vector_store.persist()
 
         # Conversation memory buffer keeps chat history
+
+        
         self.memory = ConversationBufferMemory(
             memory_key="chat_history",
             return_messages=True,
