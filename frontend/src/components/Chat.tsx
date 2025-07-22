@@ -1,4 +1,4 @@
-import React, { useState, KeyboardEvent, ChangeEvent } from 'react';
+import { useState, KeyboardEvent, ChangeEvent } from 'react';
 import ReactMarkdown from 'react-markdown';
 
 // Message interface definition
