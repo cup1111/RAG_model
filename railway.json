@@ -4,7 +4,7 @@
     "builder": "NIXPACKS"
   },
   "deploy": {
-    "startCommand": "/bin/bash -c \". /opt/venv/bin/activate && python backend/main.py\"",
+    "startCommand": "/bin/bash -c \". /opt/venv/bin/activate && cd backend && python main.py\"",
     "buildCommand": "npm run build",
     "healthcheckPath": "/api/health",
     "healthcheckTimeout": 300,
