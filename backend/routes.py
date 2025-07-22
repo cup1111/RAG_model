@@ -24,7 +24,8 @@ async def chat_endpoint(request: ChatRequest):
     if request.isCodeMode:
         system_prompt = CODE_ANALYSIS_PROMPT.strip()
         user_prompt = f"```python\n{request.message}\n```"
-        llm = ChatOpenAI(temperature=0, model_name="gpt-3.5-turbo")
+        import openai  # local import
+        llm = ChatOpenAI(client=openai.OpenAI(), temperature=0, model_name="gpt-3.5-turbo")
         try:
             result_msg = llm.invoke(
                 [
