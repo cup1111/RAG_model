@@ -6,6 +6,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
+from pathlib import Path
 
 from langchain_openai import ChatOpenAI
 
@@ -69,14 +70,16 @@ async def health_check():  # noqa: D401
 @app.get("/")
 async def read_index():
     try:
-        return FileResponse("../frontend/dist/index.html")
+        return FileResponse(str(FRONT_DIST / "index.html"))
     except Exception:  # pragma: no cover
         return {"message": "Frontend not built. Please run 'npm run build' first."}
 
 
 # ---------------------------------------------------------------------------
+BASE_DIR = Path(__file__).resolve().parent.parent
+FRONT_DIST = BASE_DIR / "frontend" / "dist"
 try:
-    app.mount("/", StaticFiles(directory="../frontend/dist", html=True), name="static")
+    app.mount("/", StaticFiles(directory=str(FRONT_DIST), html=True), name="static")
 except Exception:
     pass
 
