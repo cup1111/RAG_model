@@ -5,8 +5,7 @@ nixPkgs = ["nodejs", "python310", "gcc", "openblas"]
 cmds = [
   "npm install",
   "cd frontend && npm install",
-  "cd .."
-
+  "cd ..",
   "python3 -m venv /opt/venv",
 
   "source /opt/venv/bin/activate && pip install --upgrade pip",
