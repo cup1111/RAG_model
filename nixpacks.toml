@@ -6,7 +6,6 @@ cmds = [
   "npm install",
   "cd frontend && npm install",
   "cd .."
-  "cd backend"
 
   "python3 -m venv /opt/venv",
 
