@@ -1,33 +1,40 @@
 from __future__ import annotations
 
-"""Singleton factory for returning a shared ConversationalRetrievalChain.
-
-The chain is expensive to build (vector store, embeddings, etc.) so we
-construct it once and reuse it for all incoming requests.
-"""
+"""Provides a module-level singleton ConversationalRetrievalChain.
+Replaces previous Chroma-based implementation with FAISS for minimal
+external dependencies."""
 
 from typing import Optional
 
 from langchain.chains import ConversationalRetrievalChain
+from langchain.memory import ConversationBufferMemory
+from langchain_openai import ChatOpenAI
 
-from document_store import DocumentStore
+from vectordb import get_db
 
 __all__ = ["get_chain"]
 
-# Module-level singletons (initialized lazily)
-_DOC_STORE: Optional[DocumentStore] = None
 _CHAIN: Optional[ConversationalRetrievalChain] = None
 
 
-def get_chain() -> ConversationalRetrievalChain:  # noqa: D401  (simple function)
-    """Return a shared ConversationalRetrievalChain instance.
-
-    The first call creates the underlying `DocumentStore` and chain; all
-    subsequent calls return the same objects.
-    """
-    global _DOC_STORE, _CHAIN
+def get_chain() -> ConversationalRetrievalChain:  # noqa: D401 (simple function)
+    """Return a shared ConversationalRetrievalChain instance."""
+    global _CHAIN
 
     if _CHAIN is None:
-        _DOC_STORE = DocumentStore()
-        _CHAIN = _DOC_STORE.get_chain()
+        llm = ChatOpenAI(temperature=0.7)
+        retriever = get_db().as_retriever()
+        memory = ConversationBufferMemory(
+            memory_key="chat_history",
+            return_messages=True,
+            output_key="answer",
+        )
+        _CHAIN = ConversationalRetrievalChain.from_llm(
+            llm=llm,
+            retriever=retriever,
+            memory=memory,
+            return_source_documents=True,
+            verbose=True,
+            output_key="answer",
+        )
     return _CHAIN 
