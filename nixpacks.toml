@@ -1,10 +1,12 @@
 [phases.setup]
-nixPkgs = ["nodejs", "python310", "gcc"]
+nixPkgs = ["nodejs", "python310", "gcc", "openblas"]
 
 [phases.install]
 cmds = [
   "npm install",
   "cd frontend && npm install",
+  "cd .."
+  "cd backend"
 
   "python3 -m venv /opt/venv",
 
